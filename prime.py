@@ -29,6 +29,9 @@ def check_range(
     If any number evenly divides the base, then that number is returned.
     Otherwise, a false value is returned.
     """
+    if base <= 1:
+        # Base case: exit early
+        return False
     for val in get_range(base, max_num, verbose):
         if check_div(base, val):
             print(f"{base} is divisible by {val}")

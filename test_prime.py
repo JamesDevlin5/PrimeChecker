@@ -5,6 +5,7 @@ composites = [4, 6, 8, 9, 10, 12, 14, 15, 16]
 
 
 def test_basic():
+    assert not bool(check_range(1))
     for i in primes:
         assert not bool(check_range(i))
     for i in composites:
