@@ -34,7 +34,8 @@ def check_range(
         return False
     for val in get_range(base, max_num, verbose):
         if check_div(base, val):
-            print(f"{base} is divisible by {val}")
+            if verbose:
+                print(f"{base} is divisible by {val}")
             return val
         elif verbose:
             print(f"Tested {val}...")
@@ -60,6 +61,8 @@ def main():
     factor = check_range(test_num, verbose=args.verbose)
     if not factor:
         print(f"{test_num} appears to be prime!")
+    else:
+        print(f"{test_num} is not prime! (Divisible by: {factor})")
 
 
 if __name__ == "__main__":
