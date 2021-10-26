@@ -1,35 +1,11 @@
 #!/usr/bin/env python3
 """Calculates whether a number is prime or composite."""
 
-from enum import Enum, auto
-from math import floor, sqrt
-
 
 def round_sqrt(num: int) -> int:
     """Computes the square root of the input `num`,
     and then rounds down to the nearest whole integer."""
     return floor(sqrt(num))
-
-
-class Primality(Enum):
-    """The possible variations a number may take in regards to primality.
-
-    All natural numbers are either prime or composite. Once sufficiently large,
-    however, it becomes extremely (exponentially) difficult to test all
-    possible factorizations of a number.
-
-    Therefore, for the test-number, n, it is possible to:
-
-    1. Find a factor, f, such that n (mod f) === 0, proving n composite.
-    2. Test all possible factors of n, and determine that none of these may factor n, proving
-        n prime.
-    3. Pass a lot of primality tests, but take a very long time to terminate, in which case
-        assuming the number is prime may be optimal.
-    """
-
-    PRIME = auto()
-    COMPOSITE = auto()
-    UNKNOWN = auto()
 
 
 class OrderedList(list):
@@ -53,10 +29,12 @@ class OrderedList(list):
     def get_nums_below(self, ceiling: int) -> list[int]:
         """Getter for all the elements in this list that are comparatively less than
         some provided ceiling value."""
-        idx = 0
         # Find where ceiling overtakes list elements, if it does
+        if self.max_elem() <= ceiling:
+            # Ceiling is larger than all nums in list
+            return self
+        idx = 0
         while self[idx] <= ceiling:
-            # TODO: If ceiling is never surpassed...
             idx += 1
         return self[:idx]
 
@@ -194,6 +172,19 @@ class DynamicPrimesCache(SmallPrimesCache):
         Ensures that at least as high as the value specified has been tested."""
         # Ensure the value requested has been tested, and its primality has been cached
         target_ceil = round_sqrt(val)
-        while self.highest_tested() < target_ceil:
+        while self.highest_tested() <= target_ceil:
             _ = self.test_next()
         return super().is_prime(val)
+
+
+class SieveOfEratosthenes(PrimesCache):
+    """An implementation of the Sieve of Eratosthenes algorithm,
+    which leverages *trail division* to determine all composite numbers up to a
+    ceiling. Any numbers not in this set, below the ceiling, must therefore be prime."""
+
+    def __init__(self, limit: int):
+        """Creates a buffer for holding composites found."""
+        super().__init__()
+        self._composites = set()
+        self._ceil = limit
+        self._curr = 2

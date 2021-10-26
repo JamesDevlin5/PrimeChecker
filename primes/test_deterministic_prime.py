@@ -1,4 +1,4 @@
-from prime import *
+from deterministic_prime import *
 
 
 def test_hard():
