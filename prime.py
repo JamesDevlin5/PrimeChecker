@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
+import argparse
 from math import sqrt
 from typing import Iterable, Union
-import argparse
 
 
 def check_div(base: int, i: int) -> bool:
