@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""A utility module, composed of functionality aiding in mathematical calculations."""
+"""A mathematical library module, containing functionality for calculating
+the greatest-common-divisor of two (or more) numbers."""
 
 
 class GCD(ABC):
@@ -43,13 +44,9 @@ class GCD(ABC):
 class Euclidean(GCD):
     """A step-wise method of determining the greatest shared factor."""
 
-    def __init__(self):
-        self.step_count = 0  # *k*, in any algorithm defining this
-
     def div_calculate(self, a: int, b: int) -> int:
         """Calculates the greatest-common-divisor of a and b via repetetive division."""
         while b != 0:
-            self.step_count += 1
             # b: holds the most recently found remainder, r_k-1
             # a: holds the predecessor of b, r_k-2
             #
@@ -72,6 +69,8 @@ class Euclidean(GCD):
                 a = a - b
             else:
                 b = b - a
+        # If: negative inputs are permitted, the last line must be:
+        # return abs(a)
         return a
 
     def recursive_calculate(self, a: int, b: int) -> int:
@@ -104,7 +103,23 @@ class Euclidean(GCD):
         the remainders equal b and the remainder *r_0* of the initial step, and so on.
         """
         # Defer call
-        return self.div_calculate(a, b)
+        return self.recursive_calculate(a, b)
+
+
+class LeastAbsRem:
+    """Method of Least Absolute Remainders.
+    Allows for calculating the gcd of negative numbers."""
+
+    def calculate(self, a: int, b: int) -> int:
+        """The quotient at each step is increased by one, *if* the resulting negative remainder is
+        smaller in magnitude than the typical positive remainder.
+
+        The previous revision of this algorithm assumed that the remainder was **strictly** getting smaller
+        upon completing each step.
+
+        E.g. the recurrence relation `r_k−2 = (q_k x r_k−1) + r_k` assumed that `|r_k−1| > r_k > 0` was true for all *r*.
+        """
+        pass
 
 
 class Stein(GCD):
@@ -133,9 +148,12 @@ class Stein(GCD):
             return b
         if b == 0:  # Rule 1
             return a
+        if a == b:
+            return a
 
         a_even = bool(a % 2)
         b_even = bool(b % 2)
+
         if a_even and b_even:
             # Rule 2
             return self.calculate(a >> 1, b >> 1) << 1
@@ -147,7 +165,19 @@ class Stein(GCD):
             return self.calculate(a, b >> 1)
         else:
             # Rule 4
-            if a >= b:
-                return self.calculate(abs(a - b) >> 1, b)
-            else:
-                return self.calculate(a, abs(b - a) >> 1)
+            # if a >= b:
+            #     return self.calculate(abs(a - b) >> 1, b)
+            # else:
+            #     return self.calculate(a, abs(b - a) >> 1)
+            return self.calculate(abs(a - b), min(a, b))
+
+
+class CoprimePred:
+    """A predicate which tests whether two numbers, *a* and *b*, are co-prime.
+    *a* and *b* will be co-prime **if & only if** `gcd(a, b) == 1`.
+
+    > The numerator and denominator of any *reduced* fraction are co-prime.
+        Otherwise, the common factor could be extracted and the fraction reduced.
+    """
+
+    pass

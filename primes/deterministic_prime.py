@@ -185,6 +185,42 @@ class SieveOfEratosthenes(PrimesCache):
     def __init__(self, limit: int):
         """Creates a buffer for holding composites found."""
         super().__init__()
+        # Empty set of composites (for faster inclusion/exclusion checking
         self._composites = set()
-        self._ceil = limit
+        # Current number, for which the factors are calculated and added to the set of composite numbers
         self._curr = 2
+        self._setup(limit)
+
+    @property
+    def _curr_num():
+        """The current number being processed; whose factors are being noted as composite."""
+        return self._curr
+
+    def _setup(self, ceil: int):
+        """Initializes the repetitive process of:
+
+        1. Ensure ceiling has not been surpassed
+        2. If current item is not composite  =>  Load it as a prime
+         -  Append all factors of the current prime number, up to the ceiling value
+        3. If current item is composite      =>  Remove it from composites list
+        """
+        while self._curr_num <= ceil:
+            if self._curr_num not in self._composites:
+                # Not composite => register prime, & save composite factors
+                self.load_prime(self._curr_num)
+                # Start at prime * 2
+                curr_factor = self._curr_num * 2
+                while curr_factor <= ceil:
+                    # Load factors
+                    self._composites.add(curr_factor)
+                    curr_factor += self._curr_num
+            else:
+                self._composites.remove(self._curr)
+                # Any and all factors of composites are checked via primes
+            self._curr += 1
+        # Free resources
+        self._composites = None
+
+    def highest_tested(self) -> int:
+        """The highest number tested is the externally-defined ceiling imposed during instantiation."""
+        return self._curr_num
