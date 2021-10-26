@@ -1,12 +1,7 @@
 from prime import *
 
-primes = [2, 3, 5, 7, 11, 13, 17]
-composites = [4, 6, 8, 9, 10, 12, 14, 15, 16]
 
-
-def test_basic():
-    assert not bool(check_range(1))
-    for i in primes:
-        assert not bool(check_range(i))
-    for i in composites:
-        assert bool(check_range(i))
+def test_hard():
+    cache = DynamicPrimesCache()
+    assert cache.is_prime(5881)
+    assert not cache.is_prime(5882)
